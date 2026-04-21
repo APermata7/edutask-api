@@ -67,4 +67,9 @@ class AuthController extends Controller
             'user'         => JWTAuth::user(),
         ]);
     }
+
+    public function me()
+    {
+        return response()->json(['user' => JWTAuth::user()]);
+    }
 }
