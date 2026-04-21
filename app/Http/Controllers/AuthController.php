@@ -74,7 +74,7 @@ class AuthController extends Controller
         return response()->json(['user' => JWTAuth::user()]);
     }
 
-    public function updateprofile(Request $request)
+    public function updateProfile(Request $request)
     {
         $user = JWTAuth::user();
 
