@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Storage;
 
 
 class AuthController extends Controller
@@ -101,6 +102,38 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
+    }
+
+    public function uploadAvatar(Request $request)
+    {
+        $user = JWTAuth::user();
+
+        $validator = Validator::make($request->all(), [
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            // Delete the old avatar if it exists
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $file = $request->file('avatar');
+        $extension = $file->getClientOriginalExtension();
+        $filename = time() . '_' . uniqid() . '.' . $extension;
+        $path = $file->storeAs('avatars', $filename, 'public');
+
+        $user->avatar = $path;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Avatar uploaded successfully',
+            'avatar_url' => Storage::url($path),
             'user' => $user
         ]);
     }
