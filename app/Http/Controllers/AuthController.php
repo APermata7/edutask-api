@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Storage;
-
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends Controller
 {
@@ -140,8 +141,21 @@ class AuthController extends Controller
 
     public function logout()
     {
-        JWTAuth::logout();
-        return response()->json(['message' => 'Successfully logged out']);
+        try {
+            $token = JWTAuth::getToken();
+
+            if (!$token) {
+                return response()->json(['message' => 'Token not provided'], 400);
+            }
+
+            JWTAuth::invalidate($token);
+
+            return response()->json(['message' => 'Successfully logged out']);
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Failed to logout, please try again'], 500);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['message' => 'Invalid token, please login again'], 401);
+        }
     }
 
     public function refresh()
