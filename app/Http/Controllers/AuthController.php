@@ -137,4 +137,19 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
+
+    public function logout()
+    {
+        JWTAuth::logout();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function refresh()
+    {
+        return response()->json([
+            'access_token' => JWTAuth::refresh(),
+            'token_type' => 'Bearer',
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
+        ]);
+    }
 }
