@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Storage;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -160,10 +162,21 @@ class AuthController extends Controller
 
     public function refresh()
     {
-        return response()->json([
-            'access_token' => JWTAuth::refresh(),
-            'token_type' => 'Bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60,
-        ]);
+        try {
+            $newToken = JWTAuth::refresh();
+            return response()->json([
+                'access_token' => $newToken,
+                'token_type' => 'Bearer',
+                'expires_in' => JWTAuth::factory()->getTTL() * 60,
+            ]);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['message' => 'Token is invalid'], 401);
+        } catch (TokenExpiredException $e) {
+            return response()->json(['message' => 'Token has expired, please login again'], 401);
+        } catch (TokenBlacklistedException $e) {
+            return response()->json(['message' => 'Token is blacklisted, please login again'], 401);
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Could not refresh token'], 500);
+        }
     }
 }
