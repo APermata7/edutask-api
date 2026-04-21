@@ -41,4 +41,30 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
         ], 201);
     }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $credentials = $request->only('email', 'password');
+
+        if (!$token = JWTAuth::attempt($credentials)) {
+            return response()->json(['message' => 'Email or Password is incorrect'], 401);
+        }
+
+        return response()->json([
+            'message' => 'Login successful',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in'   => JWTAuth::factory()->getTTL() * 60,
+            'user'         => JWTAuth::user(),
+        ]);
+    }
 }
