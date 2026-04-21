@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'role', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements JWTSubject
 {
@@ -50,5 +50,17 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    //Helper method to check if the user is a lecturer
+    public function isLecturer(): bool
+    {
+        return $this->role === 'lecturer';
+    }
+
+    //Helper method to check if the user is a student
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
     }
 }
