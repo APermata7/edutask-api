@@ -56,18 +56,25 @@ EduTask API adalah backend RESTful API berbasis Laravel yang digunakan untuk sis
 ## 📁 Struktur Project
 
 ```
-app/
- ├── Models/
- ├── Http/
- │   ├── Controllers/
- │   ├── Middleware/
- ├── Services/ (opsional)
-
-routes/
- └── api.php
-
-database/
- └── migrations/
+edutask-api/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   └── Middleware/
+│   └── Models/
+├── bootstrap/
+│   └── app.php
+├── config/
+│   ├── auth.php
+├── database/
+│   └── migrations/
+├── routes/
+│   └── api.php
+├── storage/
+│   └── app/public/avatars/
+├── public/
+│   └── storage/ 
+└── .env
 ```
 
 ---
@@ -96,9 +103,9 @@ cp .env.example .env
 4. Konfigurasi database di `.env`:
 
 ```
-DB_DATABASE=edutask_db
-DB_USERNAME=root
-DB_PASSWORD=
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 ```
 
 5. Generate key:
@@ -137,15 +144,19 @@ Authorization: Bearer <your_token>
 
 ---
 
-## 📌 Endpoint API (Ringkasan)
+## 📌 Endpoint API
 
-### Auth
+### Auth & User Management
 
-| Method | Endpoint      | Deskripsi     |
-| ------ | ------------- | ------------- |
-| POST   | /api/register | Register user |
-| POST   | /api/login    | Login user    |
-| GET    | /api/me       | Get profile   |
+| Method | Endpoint              | Deskripsi                              |
+| ------ | --------------------- | -------------------------------------- |
+| POST   | /api/register         | Register user (lecturer/student)       |
+| POST   | /api/login            | Login & get JWT token                  |
+| GET    | /api/me               | Get authenticated user profile         |
+| PUT    | /api/profile          | Update profile (name, email, password) |
+| POST   | /api/profile/avatar   | Upload profile picture (max 2MB)       |
+| POST   | /api/logout           | Logout & invalidate token              |
+| POST   | /api/refresh          | Refresh JWT token                      |
 
 ---
 
