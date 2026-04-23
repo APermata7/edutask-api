@@ -18,8 +18,7 @@ class AssignmentService
         } else {
             $query->where('status', Assignment::STATUS_PUBLISHED);
 
-            // Nanti setelah modul anggota 2 selesai:
-            // filter lagi agar mahasiswa hanya melihat assignment dari kelas yang dia ikuti.
+            // tambahkan filter lagi agar mahasiswa hanya melihat assignment dari kelas yang diikuti
         }
 
         $this->applyFilters($query, $filters);
