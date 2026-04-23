@@ -13,3 +13,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
 });
+
+require __DIR__ . '/modules/assignments.php';
