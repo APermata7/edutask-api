@@ -52,13 +52,33 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    //Helper method to check if the user is a lecturer
+    /**
+     * Get the classes created by this lecturer
+     */
+    public function classes()
+    {
+        return $this->hasMany(ClassRoom::class, 'lecturer_id');
+    }
+
+    /**
+     * Get the enrollments for this student
+     */
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    /**
+     * Helper method to check if the user is a lecturer
+     */
     public function isLecturer(): bool
     {
         return $this->role === 'lecturer';
     }
 
-    //Helper method to check if the user is a student
+    /**
+     * Helper method to check if the user is a student
+     */
     public function isStudent(): bool
     {
         return $this->role === 'student';

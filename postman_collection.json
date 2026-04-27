@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "EduTask API - ClassRoom & Enrollment",
+    "description": "Postman collection untuk testing ClassRoom dan Enrollment endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Class (Lecturer)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Web Development 101\",\n  \"description\": \"Belajar web development dari dasar\",\n  \"max_students\": 30,\n  \"status\": \"active\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/classes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes"]
+        }
+      }
+    },
+    {
+      "name": "2. List All Classes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Class Details",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1"]
+        }
+      }
+    },
+    {
+      "name": "4. Update Class",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Web Development Advanced\",\n  \"description\": \"Lanjutan web development\",\n  \"max_students\": 40,\n  \"status\": \"active\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1"]
+        }
+      }
+    },
+    {
+      "name": "5. Get Invite Code",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1/invite-code",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1", "invite-code"]
+        }
+      }
+    },
+    {
+      "name": "6. Join Class Using Invite Code (Student)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer STUDENT_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"invite_code\": \"ABC12345\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/classes/join-by-code",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "join-by-code"]
+        }
+      }
+    },
+    {
+      "name": "7. List Students in Class",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer LECTURER_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1/enrollments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1", "enrollments"]
+        }
+      }
+    },
+    {
+      "name": "8. Manually Enroll Student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer LECTURER_JWT_TOKEN_HERE"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"student_id\": 2\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1/enrollments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1", "enrollments"]
+        }
+      }
+    },
+    {
+      "name": "9. Remove Student from Class",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer LECTURER_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1/enrollments/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1", "enrollments", "1"]
+        }
+      }
+    },
+    {
+      "name": "10. Check Enrollment",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1/check-enrollment/2",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1", "check-enrollment", "2"]
+        }
+      }
+    },
+    {
+      "name": "11. Delete Class",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer LECTURER_JWT_TOKEN_HERE"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/classes/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "classes", "1"]
+        }
+      }
+    }
+  ]
+}
