@@ -18,17 +18,28 @@ Route::middleware(['auth:api'])->group(function () {
     // Class management routes
     Route::get('/classes', [ClassRoomController::class, 'index']);
     Route::get('/classes/{id}', [ClassRoomController::class, 'show']);
-    Route::post('/classes', [ClassRoomController::class, 'store']);
-    Route::put('/classes/{id}', [ClassRoomController::class, 'update']);
-    Route::delete('/classes/{id}', [ClassRoomController::class, 'destroy']);
-    Route::get('/classes/{id}/invite-code', [ClassRoomController::class, 'getInviteCode']);
-    Route::post('/classes/join-by-code', [ClassRoomController::class, 'joinByCode']);
+    
+    // Lecturer only
+    Route::middleware('role:lecturer')->group(function () {
+        Route::post('/classes', [ClassRoomController::class, 'store']);
+        Route::put('/classes/{id}', [ClassRoomController::class, 'update']);
+        Route::delete('/classes/{id}', [ClassRoomController::class, 'destroy']);
+        Route::get('/classes/{id}/invite-code', [ClassRoomController::class, 'getInviteCode']);
+    });
 
-    // Enrollment management routes
-    Route::get('/classes/{classId}/enrollments', [EnrollmentController::class, 'index']);
-    Route::post('/classes/{classId}/enrollments', [EnrollmentController::class, 'store']);
-    Route::get('/classes/{classId}/enrollments/{enrollmentId}', [EnrollmentController::class, 'show']);
-    Route::delete('/classes/{classId}/enrollments/{enrollmentId}', [EnrollmentController::class, 'destroy']);
+    // Student only
+    Route::middleware('role:student')->group(function () {
+        Route::post('/classes/join-by-code', [ClassRoomController::class, 'joinByCode']);
+    });
+
+    // Enrollment management routes (Lecturer only)
+    Route::middleware('role:lecturer')->group(function () {
+        Route::get('/classes/{classId}/enrollments', [EnrollmentController::class, 'index']);
+        Route::post('/classes/{classId}/enrollments', [EnrollmentController::class, 'store']);
+        Route::delete('/classes/{classId}/enrollments/{enrollmentId}', [EnrollmentController::class, 'destroy']);
+    });
+
+    // Check enrollment (both lecturer and student)
     Route::get('/classes/{classId}/check-enrollment/{studentId}', [EnrollmentController::class, 'checkEnrollment']);
 });
 
