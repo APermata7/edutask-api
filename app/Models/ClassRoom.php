@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'description', 'max_students', 'status'])]
+#[Fillable(['name', 'description', 'max_students', 'status', 'lecturer_id'])]
 class ClassRoom extends Model
 {
     use HasFactory;
