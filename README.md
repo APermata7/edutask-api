@@ -16,10 +16,14 @@ EduTask API adalah backend RESTful API berbasis Laravel yang digunakan untuk sis
 
 ### 🏫 Class & Enrollment
 
-* Dosen membuat kelas
-* Mahasiswa bergabung ke kelas
-* List kelas per user
-* List mahasiswa dalam kelas
+* Dosen membuat, mengedit, menghapus kelas
+* Generate kode undangan unik per kelas (8 karakter)
+* Mahasiswa bergabung ke kelas dengan kode undangan
+* Dosen dapat menambah/mengeluarkan mahasiswa secara manual
+* List kelas per user (dosen melihat kelas miliknya, mahasiswa melihat kelas yang diikuti)
+* List mahasiswa dalam kelas (hanya dosen)
+* Cek status keanggotaan mahasiswa
+* Batasi jumlah mahasiswa per kelas (opsional)
 
 ### 📝 Assignment Management
 
@@ -160,15 +164,21 @@ Authorization: Bearer <your_token>
 
 ---
 
-### Classes
+### Classes & Enrollment
 
-| Method | Endpoint               |
-| ------ | ---------------------- |
-| POST   | /api/classes           |
-| GET    | /api/classes           |
-| GET    | /api/classes/{id}      |
-| POST   | /api/classes/{id}/join |
-
+| Method | Endpoint                                         | Role yang boleh | Deskripsi                                      |
+|--------|--------------------------------------------------|----------------|------------------------------------------------|
+| POST   | /api/classes                                     | dosen          | Membuat kelas baru (generate invite_code otomatis) |
+| GET    | /api/classes                                     | dosen/mahasiswa | Dosen: lihat kelas miliknya; Mahasiswa: lihat kelas yang diikuti |
+| GET    | /api/classes/{id}                                | dosen/mahasiswa | Detail kelas (dosen pemilik atau mahasiswa yang terdaftar) |
+| PUT    | /api/classes/{id}                                | dosen (pemilik) | Update kelas (name, description, max_students, status) |
+| DELETE | /api/classes/{id}                                | dosen (pemilik) | Hapus kelas (beserta semua enrollments)       |
+| GET    | /api/classes/{id}/invite-code                    | dosen (pemilik) | Mendapatkan kode undangan kelas               |
+| POST   | /api/classes/join-by-code                        | mahasiswa       | Mahasiswa bergabung ke kelas menggunakan kode undangan 8 karakter |
+| GET    | /api/classes/{classId}/enrollments               | dosen (pemilik) | Melihat daftar mahasiswa yang terdaftar di kelas |
+| POST   | /api/classes/{classId}/enrollments               | dosen (pemilik) | Dosen menambahkan mahasiswa langsung (body: `{"student_id": id}`) |
+| DELETE | /api/classes/{classId}/enrollments/{enrollmentId}| dosen (pemilik) | Dosen mengeluarkan mahasiswa dari kelas       |
+| GET    | /api/classes/{classId}/check-enrollment/{studentId} | dosen/mahasiswa | Mengecek apakah seorang mahasiswa sudah terdaftar di kelas |
 ---
 
 ### Assignments
@@ -241,9 +251,9 @@ Gunakan:
 
 Test minimal:
 
-* Register → Login → Token
-* Akses endpoint dengan token
-* Upload file submission
+- Register dosen & mahasiswa → login → dapat token
+- Dosen: CRUD kelas, tambah/hapus enrollment, lihat invite code
+- Mahasiswa: join kelas via kode, lihat kelas yang diikuti, cek enrollment
 
 ---
 
