@@ -7,14 +7,13 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class RoleMiddleware
+class CheckRole
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  ...$roles - Allowed roles (e.g., 'lecturer', 'student')
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string|array  $roles
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
@@ -24,14 +23,14 @@ class RoleMiddleware
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized - Token tidak valid',
+                'message' => 'Unauthorized',
             ], 401);
         }
 
         if (!$user) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized - User tidak ditemukan',
+                'message' => 'Unauthorized',
             ], 401);
         }
 
@@ -39,8 +38,7 @@ class RoleMiddleware
         if (!in_array($user->role, $roles)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Forbidden - Akses ditolak',
-                'user_role' => $user->role,
+                'message' => 'Forbidden - Akses ditolak. Role Anda: ' . $user->role,
                 'required_roles' => $roles,
             ], 403);
         }
