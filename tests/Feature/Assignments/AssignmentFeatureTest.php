@@ -4,6 +4,7 @@ namespace Tests\Feature\Assignments;
 
 use App\Models\ClassRoom;
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Modules\Assignments\Models\Assignment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -11,6 +12,16 @@ use Tests\TestCase;
 class AssignmentFeatureTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function authHeadersFor(User $user): array
+    {
+        $token = JWTAuth::fromUser($user);
+
+        return [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ];
+    }
 
     public function test_lecturer_can_create_assignment(): void
     {
@@ -26,7 +37,9 @@ class AssignmentFeatureTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->actingAs($lecturer, 'api')->postJson('/api/assignments', [
+        $response = $this->withHeaders($this->authHeadersFor($lecturer))
+        ->postJson('/api/assignments', 
+        [
             'class_id' => $class->id,
             'title' => 'Tugas 1',
             'description' => 'Buat REST API sederhana',
@@ -46,7 +59,9 @@ class AssignmentFeatureTest extends TestCase
             'role' => 'student',
         ]);
 
-        $response = $this->actingAs($student, 'api')->postJson('/api/assignments', [
+        $response = $this->withHeaders($this->authHeadersFor($student))
+        ->postJson('/api/assignments', 
+        [
             'class_id' => 1,
             'title' => 'Tugas 1',
             'description' => 'Tidak boleh',
@@ -81,8 +96,8 @@ class AssignmentFeatureTest extends TestCase
             'status' => Assignment::STATUS_DRAFT,
         ]);
 
-        $response = $this->actingAs($lecturer, 'api')
-            ->patchJson("/api/assignments/{$assignment->id}/publish");
+        $response = $this->withHeaders($this->authHeadersFor($lecturer))
+        ->patchJson("/api/assignments/{$assignment->id}/publish");
 
         $response->assertOk()
             ->assertJsonPath('data.status', 'published');
