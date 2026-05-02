@@ -183,12 +183,15 @@ Authorization: Bearer <your_token>
 
 ### Assignments
 
-| Method | Endpoint                      |
-| ------ | ----------------------------- |
-| POST   | /api/assignments              |
-| GET    | /api/assignments              |
-| GET    | /api/assignments/{id}         |
-| PATCH  | /api/assignments/{id}/publish |
+| Method | Endpoint                               | Role yang boleh | Deskripsi                                      |
+|--------|----------------------------------------|----------------|------------------------------------------------|
+| POST   | /api/assignments                       | dosen          | Membuat tugas baru (class_id, title, description, due_at) |
+| GET    | /api/assignments                       | dosen/mahasiswa | Dosen: semua tugas; Mahasiswa: tugas dari kelas yang diikuti |
+| GET    | /api/assignments/{assignment}          | dosen/mahasiswa | Detail tugas (akses terbatas jika mahasiswa harus terdaftar di kelas) |
+| PUT    | /api/assignments/{assignment}          | dosen (pemilik) | Mengupdate tugas (title, description, due_at, dll) |
+| PATCH  | /api/assignments/{assignment}/publish  | dosen (pemilik) | Mempublikasikan tugas (status berubah menjadi published) |
+| DELETE | /api/assignments/{assignment}          | dosen (pemilik) | Menghapus tugas                               |
+| GET    | /api/classes/{classId}/assignments     | dosen/mahasiswa | Mendaftar tugas berdasarkan kelas (filter)    |
 
 ---
 
@@ -254,6 +257,8 @@ Test minimal:
 - Register dosen & mahasiswa → login → dapat token
 - Dosen: CRUD kelas, tambah/hapus enrollment, lihat invite code
 - Mahasiswa: join kelas via kode, lihat kelas yang diikuti, cek enrollment
+- Dosen: create, read, update, publish, delete assignment
+- Mahasiswa: read assignment dari kelas yang diikuti
 
 ---
 
