@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\EnrollmentController;
 
@@ -36,6 +37,11 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     Route::get('/classes/{classId}/check-enrollment/{studentId}', [EnrollmentController::class, 'checkEnrollment']);
+});
+
+// Route untuk Submission (Tugas)
+Route::middleware(['auth:api'])->group(function () {
+    Route::apiResource('/submissions', SubmissionController::class);
 });
 
 require __DIR__ . '/modules/assignments.php';
