@@ -43,4 +43,9 @@ class Assignment extends Model
     {
         return $this->belongsTo(ClassRoom::class, 'class_id');
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(\App\Models\Submission::class);
+    }
 }

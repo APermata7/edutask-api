@@ -9,30 +9,28 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            
-            // 1. Relasi ke tabel users (siapa yang mengumpulkan)
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            
-            // 2. Judul tugas atau keterangan tugasnya
-            $table->string('task_title'); 
-            
-            // 3. Link gambar / file tugas yang diupload
-            $table->string('file_url'); 
-            
-            // 4. Nilai dari admin (nullable berarti boleh kosong sebelum dinilai)
+            $table->foreignId('assignment_id')->constrained('assignments')->onDelete('cascade');
+            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
+            $table->text('content')->nullable();
+            $table->string('file_path')->nullable();
+            $table->timestamp('submitted_at')->useCurrent();
+            $table->enum('status', ['submitted', 'late', 'resubmitted'])->default('submitted');
             $table->integer('grade')->nullable();
+            $table->text('feedback')->nullable();
             $table->timestamps();
+
+            $table->unique(['assignment_id', 'student_id']);
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('submissions');
     }

@@ -4,22 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
+use App\Modules\Assignments\Models\Assignment;
 
 class Submission extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 
-        'task_title', 
-        'file_url', 
-        'grade'
+        'assignment_id', 'student_id', 'content', 'file_path',
+        'submitted_at', 'status', 'grade', 'feedback'
     ];
 
-    public function user()
-{
-    // Ini artinya: satu submission dimiliki oleh satu user
-    return $this->belongsTo(User::class, 'user_id');
-}
+    protected $casts = [
+        'submitted_at' => 'datetime',
+    ];
+
+    public function assignment()
+    {
+        return $this->belongsTo(Assignment::class);
+    }
+
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
 }
