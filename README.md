@@ -34,10 +34,11 @@ EduTask API adalah backend RESTful API berbasis Laravel yang digunakan untuk sis
 
 ### 📤 Submission System
 
-* Mahasiswa submit tugas (upload file/gambar)
+* Mahasiswa submit tugas (upload file: gambar, PDF, zip, maks 5MB)
 * Status submission (submitted / late)
-* Validasi deadline
-* Resubmit (opsional)
+* Validasi deadline (terlambat otomatis status `late`)
+* Resubmit (revisi) – mahasiswa dapat mengirim ulang
+* Dosen dapat melihat daftar submission dan menghapus submission
 
 ### 📊 Grading & Feedback
 
@@ -76,6 +77,7 @@ edutask-api/
 │   └── api.php
 ├── storage/
 │   └── app/public/avatars/
+│   └── app/public/submissions/
 ├── public/
 │   └── storage/ 
 └── .env
@@ -197,11 +199,13 @@ Authorization: Bearer <your_token>
 
 ### Submissions
 
-| Method | Endpoint              |
-| ------ | --------------------- |
-| POST   | /api/submissions      |
-| GET    | /api/submissions      |
-| GET    | /api/submissions/{id} |
+| Method | Endpoint                         | Role yang boleh | Deskripsi                                      |
+|--------|----------------------------------|----------------|------------------------------------------------|
+| POST   | /api/submissions                 | mahasiswa      | Mengumpulkan tugas (upload file: pdf, gambar, zip, maks 5MB) |
+| GET    | /api/submissions                 | dosen/mahasiswa | Dosen: semua submission; Mahasiswa: submission miliknya |
+| GET    | /api/submissions/{submission}    | dosen/mahasiswa | Detail submission (dosen: semua; mahasiswa: milik sendiri) |
+| PUT    | /api/submissions/{submission}    | mahasiswa      | Resubmit (revisi) tugas – upload file baru, konten diperbarui |
+| DELETE | /api/submissions/{submission}    | dosen          | Hapus submission (hanya dosen pemilik kelas)  |
 
 ---
 
@@ -217,10 +221,10 @@ Authorization: Bearer <your_token>
 
 ## 🧠 Role & Permission
 
-| Role      | Akses                             |
-| --------- | --------------------------------- |
-| Dosen     | Create class, assignment, grading |
-| Mahasiswa | Join class, submit tugas          |
+| Role      | Akses                                                           |
+| --------- | --------------------------------------------------------------- |
+| Dosen     | Create class, manage enrollment, CRUD assignment, **lihat submission, hapus submission, beri nilai (grading)** |
+| Mahasiswa | Join class, lihat kelas terdaftar, **read assignment, submit tugas, resubmit, lihat submission sendiri** |
 
 ---
 
@@ -230,14 +234,15 @@ Authorization: Bearer <your_token>
 * Class → dimiliki dosen
 * Enrollment → relasi mahasiswa & class
 * Assignment → milik class
-* Submission → milik mahasiswa
-* Grade → milik submission
+* Submission → milik assignment & mahasiswa
+* Grade → milik submission (kolom grade & feedback di tabel submissions)
 
 ---
 
 ## 📤 Upload File
 
-* Disimpan di: `storage/app/public`
+* Avatar disimpan di: `storage/app/public/avatars`
+* Submission file disimpan di: `storage/app/public/submissions`
 * Akses via:
 
 ```
@@ -254,11 +259,18 @@ Gunakan:
 
 Test minimal:
 
+**Auth & User**
 - Register dosen & mahasiswa → login → dapat token
+- Get profile, update profile, upload avatar, refresh token, logout
+**Class & Enrollment**
 - Dosen: CRUD kelas, tambah/hapus enrollment, lihat invite code
 - Mahasiswa: join kelas via kode, lihat kelas yang diikuti, cek enrollment
+**Assignment**
 - Dosen: create, read, update, publish, delete assignment
 - Mahasiswa: read assignment dari kelas yang diikuti
+**Submission**
+- Mahasiswa: submit tugas (upload file), resubmit, lihat submission sendiri
+- Dosen: lihat semua submission, hapus submission
 
 ---
 
