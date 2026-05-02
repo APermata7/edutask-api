@@ -39,7 +39,9 @@ class AssignmentController extends Controller
     {
         $this->authorize('view', $assignment);
 
-        return new AssignmentResource($assignment->loadMissing('lecturer'));
+        return new AssignmentResource(
+            $assignment->loadMissing(['lecturer', 'classroom'])
+        );
     }
 
     public function update(UpdateAssignmentRequest $request, Assignment $assignment, AssignmentService $service): AssignmentResource
