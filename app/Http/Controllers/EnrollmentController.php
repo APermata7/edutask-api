@@ -230,7 +230,7 @@ class EnrollmentController extends Controller
         }
 
         // Validasi ownership (lecturer) atau student checking themselves
-        if ($class->lecturer_id !== $user->id && $user->id !== $studentId) {
+        if ($class->lecturer_id !== $user->id && $user->id != (int)$studentId) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak berhak melihat informasi ini',
