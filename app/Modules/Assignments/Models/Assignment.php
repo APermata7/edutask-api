@@ -2,6 +2,7 @@
 
 namespace App\Modules\Assignments\Models;
 
+use App\Models\ClassRoom;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,5 +37,10 @@ class Assignment extends Model
     public function lecturer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'lecturer_id');
+    }
+
+    public function classroom(): BelongsTo
+    {
+        return $this->belongsTo(ClassRoom::class, 'class_id');
     }
 }

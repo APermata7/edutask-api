@@ -29,6 +29,13 @@ class AssignmentResource extends JsonResource
                     'email' => $this->lecturer->email,
                 ];
             }),
+            'classroom' => $this->whenLoaded('classroom', function () {
+                return [
+                    'id' => $this->classroom->id,
+                    'name' => $this->classroom->name,
+                    'lecturer_id' => $this->classroom->lecturer_id,
+                ];
+            }),
         ];
     }
 }

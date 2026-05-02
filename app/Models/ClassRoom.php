@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use App\Modules\Assignments\Models\Assignment;
 
 #[Fillable(['name', 'description', 'max_students', 'status', 'lecturer_id'])]
 class ClassRoom extends Model
@@ -95,5 +96,10 @@ class ClassRoom extends Model
         }
 
         return $this->getEnrolledCountAttribute() >= $this->max_students;
+    }
+
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'class_id');
     }
 }

@@ -2,15 +2,26 @@
 
 namespace Tests\Feature\Assignments;
 
+use App\Models\ClassRoom;
 use App\Models\User;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Modules\Assignments\Models\Assignment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class AssignmentFeatureTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function authHeadersFor(User $user): array
+    {
+        $token = JWTAuth::fromUser($user);
+
+        return [
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ];
+    }
 
     public function test_lecturer_can_create_assignment(): void
     {
@@ -18,19 +29,18 @@ class AssignmentFeatureTest extends TestCase
             'role' => 'lecturer',
         ]);
 
-        $classId = DB::table('classes')->insertGetId([
-            'lecturer_id' => $lecturer->id,
-            'code' => 'IF-01',
+        $class = ClassRoom::create([
             'name' => 'Pemrograman Web',
             'description' => null,
-            'semester' => '2025/2026',
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'lecturer_id' => $lecturer->id,
+            'max_students' => 30,
+            'status' => 'active',
         ]);
 
-        $response = $this->actingAs($lecturer, 'api')->postJson('/api/assignments', [
-            'class_id' => $classId,
+        $response = $this->withHeaders($this->authHeadersFor($lecturer))
+        ->postJson('/api/assignments', 
+        [
+            'class_id' => $class->id,
             'title' => 'Tugas 1',
             'description' => 'Buat REST API sederhana',
             'instructions' => 'Gunakan Laravel',
@@ -39,7 +49,7 @@ class AssignmentFeatureTest extends TestCase
 
         $response->assertCreated()
             ->assertJsonPath('data.title', 'Tugas 1')
-            ->assertJsonPath('data.class_id', $classId)
+            ->assertJsonPath('data.class_id', $class->id)
             ->assertJsonPath('data.status', 'draft');
     }
 
@@ -49,7 +59,9 @@ class AssignmentFeatureTest extends TestCase
             'role' => 'student',
         ]);
 
-        $response = $this->actingAs($student, 'api')->postJson('/api/assignments', [
+        $response = $this->withHeaders($this->authHeadersFor($student))
+        ->postJson('/api/assignments', 
+        [
             'class_id' => 1,
             'title' => 'Tugas 1',
             'description' => 'Tidak boleh',
@@ -66,8 +78,16 @@ class AssignmentFeatureTest extends TestCase
             'role' => 'lecturer',
         ]);
 
+        $class = ClassRoom::create([
+            'name' => 'Pemrograman Web',
+            'description' => null,
+            'lecturer_id' => $lecturer->id,
+            'max_students' => 30,
+            'status' => 'active',
+        ]);
+
         $assignment = Assignment::create([
-            'class_id' => 1,
+            'class_id' => $class->id,
             'lecturer_id' => $lecturer->id,
             'title' => 'Tugas Draft',
             'description' => null,
@@ -76,8 +96,8 @@ class AssignmentFeatureTest extends TestCase
             'status' => Assignment::STATUS_DRAFT,
         ]);
 
-        $response = $this->actingAs($lecturer, 'api')
-            ->patchJson("/api/assignments/{$assignment->id}/publish");
+        $response = $this->withHeaders($this->authHeadersFor($lecturer))
+        ->patchJson("/api/assignments/{$assignment->id}/publish");
 
         $response->assertOk()
             ->assertJsonPath('data.status', 'published');
