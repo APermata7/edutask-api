@@ -8,11 +8,14 @@ use App\Modules\Assignments\Http\Requests\UpdateAssignmentRequest;
 use App\Modules\Assignments\Http\Resources\AssignmentResource;
 use App\Modules\Assignments\Models\Assignment;
 use App\Modules\Assignments\Services\AssignmentService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
+    use AuthorizesRequests;
+    
     public function index(Request $request, AssignmentService $service)
     {
         $this->authorize('viewAny', Assignment::class);
