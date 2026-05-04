@@ -13,7 +13,7 @@ class SubmissionController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Submission::with(['assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user']);
+        $query = Submission::with(['assignment.classroom', 'student']);
 
         if ($user->role === 'student') {
             $query->where('student_id', $user->id);
@@ -97,13 +97,13 @@ class SubmissionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tugas berhasil dikumpulkan',
-            'data' => $submission->load('assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user')
+            'data' => $submission->load('assignment.classroom', 'student')
         ], 201);
     }
 
     public function show($id)
     {
-        $submission = Submission::with(['assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user'])->find($id);
+        $submission = Submission::with(['assignment.classroom', 'student'])->find($id);
         if (!$submission) {
             return response()->json([
                 'success' => false,
@@ -125,7 +125,7 @@ class SubmissionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Detail submission',
-            'data' => $submission->load('assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user')
+            'data' => $submission
         ]);
     }
 
@@ -142,7 +142,6 @@ class SubmissionController extends Controller
         $user = auth()->user();
         $isOwner = ($submission->student_id === $user->id);
 
-        // Hanya mahasiswa pemilik yang boleh resubmit (update)
         if ($isOwner) {
             $validator = Validator::make($request->all(), [
                 'content' => 'nullable|string',
@@ -177,7 +176,6 @@ class SubmissionController extends Controller
             ]);
         }
 
-        // Jika bukan pemilik (misalnya dosen), tolak
         return response()->json([
             'success' => false,
             'message' => 'Tidak punya hak akses'

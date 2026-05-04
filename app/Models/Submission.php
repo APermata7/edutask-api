@@ -17,8 +17,6 @@ class Submission extends Model
         'file_path',
         'submitted_at',
         'status',
-        'grade',
-        'feedback',
     ];
 
     protected $casts = [
@@ -34,14 +32,8 @@ class Submission extends Model
     {
         return $this->belongsTo(User::class, 'student_id');
     }
-
-    public function gradeRecord()
+    public function grade()
     {
         return $this->hasOne(Grade::class);
-    }
-
-    public function feedbacks()
-    {
-        return $this->hasMany(Feedback::class);
     }
 }
