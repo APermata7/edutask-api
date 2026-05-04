@@ -95,11 +95,6 @@ class GradeController extends Controller
             ]
         );
 
-        $submission->update([
-            'grade' => $validated['score'],
-            'feedback' => $validated['feedback'] ?? $submission->feedback,
-        ]);
-
         return response()->json([
             'success' => true,
             'message' => 'Grade created',
@@ -132,17 +127,6 @@ class GradeController extends Controller
 
         $grade->update($validated);
 
-        $submissionUpdates = [];
-        if (array_key_exists('score', $validated)) {
-            $submissionUpdates['grade'] = $validated['score'];
-        }
-        if (array_key_exists('feedback', $validated)) {
-            $submissionUpdates['feedback'] = $validated['feedback'];
-        }
-        if ($submissionUpdates) {
-            $grade->submission->update($submissionUpdates);
-        }
-
         return response()->json([
             'success' => true,
             'message' => 'Grade updated',
@@ -167,11 +151,6 @@ class GradeController extends Controller
                 'message' => 'Tidak punya akses'
             ], 403);
         }
-
-        $grade->submission->update([
-            'grade' => null,
-            'feedback' => null,
-        ]);
 
         $grade->delete();
 
