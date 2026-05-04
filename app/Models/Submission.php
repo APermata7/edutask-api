@@ -11,8 +11,14 @@ class Submission extends Model
     use HasFactory;
 
     protected $fillable = [
-        'assignment_id', 'student_id', 'content', 'file_path',
-        'submitted_at', 'status', 'grade', 'feedback'
+        'assignment_id',
+        'student_id',
+        'content',
+        'file_path',
+        'submitted_at',
+        'status',
+        'grade',
+        'feedback',
     ];
 
     protected $casts = [
@@ -27,5 +33,15 @@ class Submission extends Model
     public function student()
     {
         return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function gradeRecord()
+    {
+        return $this->hasOne(Grade::class);
+    }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
     }
 }

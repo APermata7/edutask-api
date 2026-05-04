@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\ClassRoomController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\GradeController;
+use App\Http\Controllers\FeedbackController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -18,7 +20,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('/classes', [ClassRoomController::class, 'index']);
     Route::get('/classes/{id}', [ClassRoomController::class, 'show']);
-    
+
     Route::middleware('role:lecturer')->group(function () {
         Route::post('/classes', [ClassRoomController::class, 'store']);
         Route::put('/classes/{id}', [ClassRoomController::class, 'update']);
@@ -42,6 +44,22 @@ Route::middleware(['auth:api'])->group(function () {
 // Route untuk Submission (Tugas)
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('/submissions', SubmissionController::class);
+
+    Route::get('/grades', [GradeController::class, 'index']);
+    Route::get('/grades/{id}', [GradeController::class, 'show']);
+
+    Route::middleware('role:lecturer')->group(function () {
+        Route::post('/classes/{classId}/grade', [GradeController::class, 'store']);
+        Route::post('/grades', [GradeController::class, 'store']);
+        Route::put('/grades/{id}', [GradeController::class, 'update']);
+        Route::delete('/grades/{id}', [GradeController::class, 'destroy']);
+    });
+
+    Route::get('/feedback', [FeedbackController::class, 'index']);
+    Route::get('/feedback/{id}', [FeedbackController::class, 'show']);
+    Route::post('/feedback', [FeedbackController::class, 'store']);
+    Route::put('/feedback/{id}', [FeedbackController::class, 'update']);
+    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy']);
 });
 
 require __DIR__ . '/modules/assignments.php';

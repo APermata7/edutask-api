@@ -13,7 +13,7 @@ class SubmissionController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Submission::with(['assignment.classroom', 'student']);
+        $query = Submission::with(['assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user']);
 
         if ($user->role === 'student') {
             $query->where('student_id', $user->id);
@@ -97,13 +97,13 @@ class SubmissionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Tugas berhasil dikumpulkan',
-            'data' => $submission->load('assignment', 'student')
+            'data' => $submission->load('assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user')
         ], 201);
     }
 
     public function show($id)
     {
-        $submission = Submission::with(['assignment.classroom', 'student'])->find($id);
+        $submission = Submission::with(['assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user'])->find($id);
         if (!$submission) {
             return response()->json([
                 'success' => false,
@@ -125,7 +125,7 @@ class SubmissionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Detail submission',
-            'data' => $submission
+            'data' => $submission->load('assignment.classroom', 'student', 'gradeRecord.lecturer', 'feedbacks.user')
         ]);
     }
 
