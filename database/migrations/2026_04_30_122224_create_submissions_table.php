@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('file_path')->nullable();
             $table->timestamp('submitted_at')->useCurrent();
             $table->enum('status', ['submitted', 'late', 'resubmitted'])->default('submitted');
-            $table->integer('grade')->nullable();
-            $table->text('feedback')->nullable();
             $table->timestamps();
 
             $table->unique(['assignment_id', 'student_id']);
