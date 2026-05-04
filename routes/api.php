@@ -10,13 +10,13 @@ use App\Http\Controllers\FeedbackController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/refresh', [AuthController::class, 'refresh']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/profile/avatar', [AuthController::class, 'uploadAvatar']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
 
     Route::get('/classes', [ClassRoomController::class, 'index']);
     Route::get('/classes/{id}', [ClassRoomController::class, 'show']);
@@ -41,7 +41,6 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/classes/{classId}/check-enrollment/{studentId}', [EnrollmentController::class, 'checkEnrollment']);
 });
 
-// Route untuk Submission (Tugas)
 Route::middleware(['auth:api'])->group(function () {
     Route::apiResource('/submissions', SubmissionController::class);
 

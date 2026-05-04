@@ -163,7 +163,7 @@ class AuthController extends Controller
     public function refresh()
     {
         try {
-            $token = JWTAuth::getToken(); 
+            $token = JWTAuth::getToken();
             if (!$token) {
                 return response()->json(['message' => 'Token not provided'], 400);
             }
@@ -174,8 +174,12 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
                 'expires_in' => JWTAuth::factory()->getTTL() * 60,
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Could not refresh token: ' . $e->getMessage()], 500);
+        } catch (TokenBlacklistedException $e) {
+            return response()->json(['message' => 'Token is blacklisted, please login again'], 401);
+        } catch (TokenInvalidException $e) {
+            return response()->json(['message' => 'Token is invalid'], 401);
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Could not refresh token'], 500);
         }
     }
 }
