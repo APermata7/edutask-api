@@ -211,11 +211,14 @@ Refresh token dapat digunakan untuk memperoleh token baru tanpa harus login ulan
 
 ### Grades
 
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | /api/grades      |
-| GET    | /api/grades      |
-| GET    | /api/grades/{id} |
+| Method | Endpoint                         | Role yang boleh | Deskripsi                                      |
+|--------|----------------------------------|----------------|------------------------------------------------|
+| POST   | /api/grades                      | dosen          | Memberikan nilai pada submission (wajib submission_id, score) |
+| GET    | /api/grades                      | dosen/mahasiswa | Dosen: semua grade; Mahasiswa: grade miliknya |
+| GET    | /api/grades/{id}                 | dosen/mahasiswa | Detail grade (dosen: semua; mahasiswa: milik sendiri) |
+| PUT    | /api/grades/{id}                 | dosen          | Mengupdate grade (score/feedback)             |
+| DELETE | /api/grades/{id}                 | dosen          | Menghapus grade                               |
+| POST   | /api/classes/{classId}/grade     | dosen          | Alternatif memberi nilai dengan validasi kelas |
 
 ---
 
@@ -235,7 +238,7 @@ Refresh token dapat digunakan untuk memperoleh token baru tanpa harus login ulan
 * Enrollment → relasi mahasiswa & class
 * Assignment → milik class
 * Submission → milik assignment & mahasiswa
-* Grade → milik submission (kolom grade & feedback di tabel submissions)
+* Grade → milik submission (tabel grades terpisah dengan relasi belongsTo)
 
 ---
 
@@ -277,6 +280,9 @@ Test minimal:
 **Submission**
 - Mahasiswa: submit tugas (upload file), resubmit, lihat submission sendiri
 - Dosen: lihat semua submission, hapus submission
+**Grading**
+- Dosen: create, read, update, delete grade
+- Mahasiswa: read grade miliknya
 
 ---
 
