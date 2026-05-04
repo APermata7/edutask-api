@@ -256,31 +256,31 @@ php artisan storage:link
 
 ## 🧪 Testing
 
-Gunakan:
+Gunakan **Postman** untuk menguji endpoint. Berikut daftar minimal pengujian per modul:
 
-* Postman
-
-Test minimal:
-
-**Auth & User**
-- Register (dosen & mahasiswa) → validasi email unik, role
+### 🔐 Auth & User 
+- Register dosen & mahasiswa → validasi email unik, role
 - Login → mendapatkan token JWT
-- Get profile (/me) → data user yang sedang login
+- Get profile (`/me`) → data user yang sedang login
 - Update profile (name, email, password)
 - Upload avatar (maks 2MB, format gambar)
 - Refresh token → menghasilkan token baru, token lama masuk blacklist
 - Logout → invalidate token
-- Semua error autentikasi mengembalikan JSON 401 dengan pesan spesifik (invalid, blacklisted)
-**Class & Enrollment**
+- Error autentikasi → JSON 401 dengan pesan spesifik (invalid, blacklisted)
+
+### 🏫 Class & Enrollment 
 - Dosen: CRUD kelas, tambah/hapus enrollment, lihat invite code
 - Mahasiswa: join kelas via kode, lihat kelas yang diikuti, cek enrollment
-**Assignment**
+
+### 📝 Assignment 
 - Dosen: create, read, update, publish, delete assignment
 - Mahasiswa: read assignment dari kelas yang diikuti
-**Submission**
+
+### 📤 Submission
 - Mahasiswa: submit tugas (upload file), resubmit, lihat submission sendiri
 - Dosen: lihat semua submission, hapus submission
-**Grading**
+
+### 📊 Grading
 - Dosen: create, read, update, delete grade
 - Mahasiswa: read grade miliknya
 
