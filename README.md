@@ -53,7 +53,7 @@ EduTask API adalah backend RESTful API berbasis Laravel yang digunakan untuk sis
 
 * Laravel (Backend Framework)
 * MySQL (Database)
-* JWT Auth (`tymon/jwt-auth`)
+* JWT Auth (`php-open-source-saver/jwt-auth`)
 * REST API Architecture
 
 ---
@@ -142,10 +142,10 @@ php artisan serve
 
 ## 🔑 Authentication
 
-Gunakan JWT Token pada setiap request:
+Gunakan JWT Token pada setiap request. Token dikirim melalui header `Authorization: Bearer <token>`.  
 
 ```
-Authorization: Bearer <your_token>
+Refresh token dapat digunakan untuk memperoleh token baru tanpa harus login ulang. Token yang sudah di-refresh akan masuk blacklist dan tidak dapat digunakan kembali.
 ```
 
 ---
@@ -260,8 +260,14 @@ Gunakan:
 Test minimal:
 
 **Auth & User**
-- Register dosen & mahasiswa → login → dapat token
-- Get profile, update profile, upload avatar, refresh token, logout
+- Register (dosen & mahasiswa) → validasi email unik, role
+- Login → mendapatkan token JWT
+- Get profile (/me) → data user yang sedang login
+- Update profile (name, email, password)
+- Upload avatar (maks 2MB, format gambar)
+- Refresh token → menghasilkan token baru, token lama masuk blacklist
+- Logout → invalidate token
+- Semua error autentikasi mengembalikan JSON 401 dengan pesan spesifik (invalid, blacklisted)
 **Class & Enrollment**
 - Dosen: CRUD kelas, tambah/hapus enrollment, lihat invite code
 - Mahasiswa: join kelas via kode, lihat kelas yang diikuti, cek enrollment
