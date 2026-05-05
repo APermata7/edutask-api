@@ -3,7 +3,7 @@
 use App\Modules\Assignments\Http\Controllers\AssignmentController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware(['assignment.json', 'auth:api'])->group(function () {
     Route::get('/assignments', [AssignmentController::class, 'index']);
     Route::get('/assignments/{assignment}', [AssignmentController::class, 'show']);
     Route::get('/classes/{classId}/assignments', [AssignmentController::class, 'byClass']);
