@@ -14,9 +14,21 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    use AuthorizesRequests;
-    
-    public function index(Request $request, AssignmentService $service)
+    private function success(string $message, mixed $data = null, int $code = 200): JsonResponse
+    {
+        $payload = [
+            'success' => true,
+            'message' => $message,
+        ];
+
+        if (!is_null($data)) {
+            $payload['data'] = $data;
+        }
+
+        return response()->json($payload, $code);
+    }
+
+    public function index(Request $request, AssignmentService $service): JsonResponse
     {
         $this->authorize('viewAny', Assignment::class);
 
@@ -26,43 +38,46 @@ class AssignmentController extends Controller
             (int) $request->integer('per_page', 15)
         );
 
-        return AssignmentResource::collection($assignments);
+        return $this->success(
+            'Daftar assignment berhasil diambil',
+            AssignmentResource::collection($assignments)->response()->getData(true)
+        );
     }
 
     public function store(StoreAssignmentRequest $request, AssignmentService $service): JsonResponse
     {
         $assignment = $service->create($request->validated(), $request->user());
 
-        return (new AssignmentResource($assignment))
-            ->response()
-            ->setStatusCode(201);
-    }
-
-    public function show(Assignment $assignment): AssignmentResource
-    {
-        $this->authorize('view', $assignment);
-
-        return new AssignmentResource(
-            $assignment->loadMissing(['lecturer', 'classroom'])
+        return $this->success(
+            'Assignment berhasil dibuat',
+            (new AssignmentResource($assignment->loadMissing(['lecturer', 'classroom'])))->resolve(),
+            201
         );
     }
 
-    public function update(UpdateAssignmentRequest $request, Assignment $assignment, AssignmentService $service): AssignmentResource
+    public function show(Assignment $assignment): JsonResponse
     {
-        $this->authorize('update', $assignment);
+        $this->authorize('view', $assignment);
 
-        $assignment = $service->update($assignment, $request->validated());
-
-        return new AssignmentResource($assignment);
+        return $this->success(
+            'Detail assignment berhasil diambil',
+            (new AssignmentResource($assignment->loadMissing(['lecturer', 'classroom'])))->resolve()
+        );
     }
 
-    public function publish(Assignment $assignment, AssignmentService $service): AssignmentResource
-    {
-        $this->authorize('publish', $assignment);
+    public function update(
+        UpdateAssignmentRequest $request,
+        Assignment $assignment,
+        AssignmentService $service
+    ): JsonResponse {
+        $this->authorize('update', $assignment);
 
-        $assignment = $service->publish($assignment);
+        $updated = $service->update($assignment, $request->validated());
 
-        return new AssignmentResource($assignment);
+        return $this->success(
+            'Assignment berhasil diperbarui',
+            (new AssignmentResource($updated->loadMissing(['lecturer', 'classroom'])))->resolve()
+        );
     }
 
     public function destroy(Assignment $assignment, AssignmentService $service): JsonResponse
@@ -71,12 +86,22 @@ class AssignmentController extends Controller
 
         $service->delete($assignment);
 
-        return response()->json([
-            'message' => 'Assignment deleted successfully',
-        ]);
+        return $this->success('Assignment berhasil dihapus');
     }
 
-    public function byClass(Request $request, int $classId, AssignmentService $service)
+    public function publish(Assignment $assignment, AssignmentService $service): JsonResponse
+    {
+        $this->authorize('publish', $assignment);
+
+        $published = $service->publish($assignment);
+
+        return $this->success(
+            'Assignment berhasil dipublish',
+            (new AssignmentResource($published->loadMissing(['lecturer', 'classroom'])))->resolve()
+        );
+    }
+
+    public function byClass(Request $request, int $classId, AssignmentService $service): JsonResponse
     {
         $assignments = $service->paginateByClassForUser(
             $classId,
@@ -84,6 +109,9 @@ class AssignmentController extends Controller
             (int) $request->integer('per_page', 15)
         );
 
-        return AssignmentResource::collection($assignments);
+        return $this->success(
+            'Daftar assignment per kelas berhasil diambil',
+            AssignmentResource::collection($assignments)->response()->getData(true)
+        );
     }
 }
