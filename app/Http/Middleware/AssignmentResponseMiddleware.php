@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
-class AssignmentJsonResponseMiddleware
+class AssignmentResponseMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
@@ -26,7 +26,7 @@ class AssignmentJsonResponseMiddleware
         } catch (AuthorizationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage() ?: 'Forbidden',
+                'message' => 'Forbidden',
             ], 403);
         } catch (ValidationException $e) {
             return response()->json([

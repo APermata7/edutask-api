@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
+    use AuthorizesRequests;
+    
     private function success(string $message, mixed $data = null, int $code = 200): JsonResponse
     {
         $payload = [
