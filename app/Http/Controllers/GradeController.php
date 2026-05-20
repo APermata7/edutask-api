@@ -95,6 +95,11 @@ class GradeController extends Controller
             ]
         );
 
+        $submission->update([
+            'grade' => $validated['score'],
+            'feedback' => $validated['feedback'] ?? null,
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Grade created',
@@ -107,17 +112,11 @@ class GradeController extends Controller
         $grade = Grade::with('submission.assignment.classroom')->find($id);
 
         if (!$grade) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Grade not found'
-            ], 404);
+            return response()->json(['message' => 'Grade not found'], 404);
         }
 
         if (!$this->canAccessGrade($grade) || auth()->user()->role !== 'lecturer') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tidak punya akses'
-            ], 403);
+            return response()->json(['message' => 'Tidak punya akses'], 403);
         }
 
         $validated = $request->validate([
@@ -126,6 +125,13 @@ class GradeController extends Controller
         ]);
 
         $grade->update($validated);
+
+        if (array_key_exists('score', $validated)) {
+            $grade->submission->update(['grade' => $validated['score']]);
+        }
+        if (array_key_exists('feedback', $validated)) {
+            $grade->submission->update(['feedback' => $validated['feedback']]);
+        }
 
         return response()->json([
             'success' => true,
