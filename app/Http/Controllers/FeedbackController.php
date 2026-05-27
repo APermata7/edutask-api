@@ -33,12 +33,6 @@ class FeedbackController extends Controller
 
         $feedback = $this->feedbackService->createFeedback($validated);
 
-        if ($feedback->submission_id && auth()->user()?->role === 'lecturer') {
-            $feedback->submission()->update([
-                'feedback' => $feedback->message,
-            ]);
-        }
-
         return response()->json([
             'message' => 'Feedback created',
             'data' => $feedback->load(['submission.assignment', 'submission.student', 'user'])
@@ -137,12 +131,6 @@ class FeedbackController extends Controller
             return response()->json([
                 'message' => 'Feedback not found'
             ], 404);
-        }
-
-        if ($feedback->submission_id && auth()->user()?->role === 'lecturer') {
-            $feedback->submission()->update([
-                'feedback' => $feedback->message,
-            ]);
         }
 
         return response()->json([

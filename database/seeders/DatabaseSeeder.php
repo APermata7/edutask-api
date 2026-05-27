@@ -90,8 +90,6 @@ class DatabaseSeeder extends Seeder
                 'content' => 'Repository: https://example.com/demo-profile',
                 'submitted_at' => now(),
                 'status' => 'submitted',
-                'grade' => 88,
-                'feedback' => 'Struktur halaman sudah rapi, perlu sedikit perbaikan responsive layout.',
             ]
         );
 

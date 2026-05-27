@@ -4,7 +4,7 @@ namespace Tests\Feature\Assignments;
 
 use App\Models\ClassRoom;
 use App\Models\User;
-use Tymon\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use App\Modules\Assignments\Models\Assignment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
