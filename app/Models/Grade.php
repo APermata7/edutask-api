@@ -14,9 +14,10 @@ class Grade extends Model
         'feedback',
     ];
 
+    // app/Models/Grade.php
     public function submission()
     {
-        return $this->belongsTo(Submission::class);
+        return $this->belongsTo(Submission::class, 'submission_id');
     }
 
     public function lecturer()
