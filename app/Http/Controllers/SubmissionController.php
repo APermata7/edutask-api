@@ -13,21 +13,30 @@ class SubmissionController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Submission::with(['assignment.classroom', 'student']);
+
+        $query = Submission::select(
+            'submissions.*',
+            'grades.score as grade',
+            'grades.feedback as feedback'
+        )->leftJoin('grades', 'submissions.id', '=', 'grades.submission_id')
+            ->with(['assignment.classroom', 'student']);
 
         if ($user->role === 'student') {
             $query->where('student_id', $user->id);
         }
-
         if ($request->has('assignment_id')) {
             $query->where('assignment_id', $request->assignment_id);
+        }
+        if ($request->has('class_id')) {
+            $query->whereHas('assignment', function ($q) use ($request) {
+                $q->where('class_id', $request->class_id);
+            });
         }
 
         $submissions = $query->get();
 
         return response()->json([
             'success' => true,
-            'message' => 'Daftar submission',
             'data' => $submissions
         ]);
     }
@@ -68,8 +77,8 @@ class SubmissionController extends Controller
         }
 
         $existing = Submission::where('assignment_id', $assignment->id)
-                              ->where('student_id', $user->id)
-                              ->first();
+            ->where('student_id', $user->id)
+            ->first();
         if ($existing) {
             return response()->json([
                 'success' => false,
@@ -103,7 +112,14 @@ class SubmissionController extends Controller
 
     public function show($id)
     {
-        $submission = Submission::with(['assignment.classroom', 'student'])->find($id);
+        $submission = Submission::select(
+            'submissions.*',
+            'grades.score as grade',
+            'grades.feedback as feedback'
+        )->leftJoin('grades', 'submissions.id', '=', 'grades.submission_id')
+            ->with(['assignment.classroom', 'student'])
+            ->find($id);
+
         if (!$submission) {
             return response()->json([
                 'success' => false,
